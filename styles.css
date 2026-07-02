@@ -85,21 +85,52 @@ input { font-family: inherit; color: inherit; width: 100%; padding: clamp(10px, 
 .btn-ghost { background: transparent; color: var(--text); padding: clamp(10px, 3vw, 14px) clamp(14px, 4vw, 20px); border: 1px solid rgba(255,255,255,0.2); border-radius: var(--radius-md); font-weight: 700; width: 100%; font-size: clamp(0.85rem, 4vw, 1rem); }
 
 /* GAME GRID */
-.kf-grid { display: flex; flex-direction: row; gap: clamp(8px, 2vw, 15px); }
-.kf-players-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.kf-action-col { width: clamp(70px, 18vw, 90px); flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: clamp(5px, 2vw, 10px); }
+.kf-grid { display: flex; flex-direction: row; gap: clamp(4px, 1vw, 15px); height: 100%; }
+
+.kf-players-col { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    /* This forces the column to fit perfectly in the available screen space */
+    height: calc(100vh - 200px); 
+    overflow-y: hidden; 
+    gap: 0;
+}
+
+.kf-action-col { 
+    width: clamp(70px, 18vw, 90px); 
+    flex-shrink: 0; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 10px; 
+    border-left: 1px solid rgba(255,255,255,0.1); 
+    padding-left: clamp(5px, 2vw, 10px); 
+}
+
 .kf-player-row { 
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    padding: 0 5px; 
     border-bottom: 1px solid rgba(255,255,255,0.05); 
-    /* Force a fixed height to prevent layout jumps during state switches */
-    height: 52px; 
-    min-height: 52px;
+    /* Flex: 1 allows rows to dynamically shrink based on player count */
+    flex: 1 1 auto;
+    min-height: 0; 
     overflow: hidden;
     transition: none; 
 }
 .kf-player-row:last-child { border-bottom: none; }
-.kf-name { font-weight: 700; font-size: clamp(0.9rem, 3.5vw, 1rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: clamp(65px, 20vw, 100px); }
+
+.kf-name { 
+    font-weight: 700; 
+    /* Font scales down dynamically so names never hit the edge */
+    font-size: clamp(0.7rem, 2vh, 1rem); 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width: clamp(60px, 15vw, 100px);
+}
 
 /* CONTROLS */
 .stepper { display: flex; align-items: center; gap: 5px; }
