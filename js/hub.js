@@ -78,7 +78,7 @@ const HubEngine = {
         }
     },
 
-    init() {
+   init() {
         this.requestWakeLock();
         document.addEventListener('visibilitychange', () => {
             if (this.wakeLock !== null && document.visibilityState === 'visible') this.requestWakeLock();
@@ -89,21 +89,7 @@ const HubEngine = {
         
         this.setGreeting(); 
 
-// 2. New function to save the global host
-    saveGlobalHost() {
-        const name = document.getElementById('global-host-name').value.trim();
-        if (!name) return alert("Please enter a host name.");
-        
-        this.state.hostName = name;
-        localStorage.setItem('hub_master_config', JSON.stringify(this.state));
-        document.getElementById('modal-host-setup').classList.add('hidden');
-        
-        if (this.state.pendingGame) {
-            this.initLobby(this.state.pendingGame);
-        }
-    },
-
-// --- NEW: Network Session Hydration Hook ---
+        // --- NEW: Network Session Hydration Hook ---
         if (typeof NetworkEngine !== 'undefined') {
             if (NetworkEngine.restoreSession()) {
                 if (NetworkEngine.role === 'host') {
@@ -116,6 +102,20 @@ const HubEngine = {
         // -------------------------------------------
 
         this.switchView(this.state.currentView);
+    },
+
+    // 2. New function to save the global host
+    saveGlobalHost() {
+        const name = document.getElementById('global-host-name').value.trim();
+        if (!name) return alert("Please enter a host name.");
+        
+        this.state.hostName = name;
+        localStorage.setItem('hub_master_config', JSON.stringify(this.state));
+        document.getElementById('modal-host-setup').classList.add('hidden');
+        
+        if (this.state.pendingGame) {
+            this.initLobby(this.state.pendingGame);
+        }
     },
 
     setGreeting() {
