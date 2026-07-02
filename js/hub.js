@@ -176,15 +176,20 @@ initLobby(gameId) {
             return;
         }
         // ... rest of your existing initLobby code ...
-
-        // FIX: Deep wipe engine state to guarantee spectator triggers the wait lounge
+        // FIX: Deep wipe engine state AND reset visual DOM panels to guarantee clean start
         if (gameId === 'kachuful' && typeof KFEngine !== 'undefined') {
             KFEngine.state = { players: [], names: [], max: 5, round: 1, bids: [], misses: [], phase: 'bid', history: [], suspendedState: null, editingOldRecordData: null };
             localStorage.removeItem('kf_host_state');
+            document.getElementById('kf-active-panel').style.display = 'none';
+            document.getElementById('kf-setup-panel').style.display = 'block';
+            document.getElementById('kf-players-input').value = ''; // Optional: clears old input
         }
         if (gameId === 'kalitiri' && typeof KTEngine !== 'undefined') {
             KTEngine.state = { players: [], trump: [], opp: [], score: 250, win: "", history: [] };
             localStorage.removeItem('kt_host_state');
+            document.getElementById('kt-active-panel').style.display = 'none';
+            document.getElementById('kt-setup-panel').style.display = 'block';
+            document.getElementById('kt-players-input').value = ''; // Optional: clears old input
         }
         
         this.state.pendingGame = gameId;
