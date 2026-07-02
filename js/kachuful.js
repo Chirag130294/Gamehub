@@ -129,18 +129,16 @@ const KFEngine = {
                     statBtn.style.display = 'none';
                     bidSpan.parentElement.style.display = 'flex';
                 } else {
-                    nameEl.style.display = 'none'; 
+                    nameEl.style.display = 'block'; // KEEP NAME VISIBLE
                     bidSpan.parentElement.style.display = 'none';
                     
                     statBtn.style.display = 'flex';
-                    statBtn.style.width = '100%';
-                    statBtn.style.justifyContent = 'space-between';
-                    statBtn.style.alignItems = 'center';
-                    statBtn.style.padding = '12px 15px'; 
-                    statBtn.style.fontSize = '1.1rem';
+                    statBtn.style.width = 'auto'; // Let it fit naturally
+                    statBtn.style.marginLeft = 'auto'; // Align to right
                     
                     statBtn.className = `status-pill ${this.state.misses[i] ? 'pill-miss' : 'pill-made'} host-only`;
-                    statBtn.innerHTML = `<span style="font-weight:900;">${p.name}</span> <span>${this.state.misses[i] ? '<i class="fa-solid fa-xmark"></i> Miss' : '<i class="fa-solid fa-check"></i> Made'} ${this.state.bids[i]}</span>`;
+                    // Removed the huge padding/fontSize inside the style to let CSS handle it
+                    statBtn.innerHTML = `<span style="font-weight:900;">${this.state.misses[i] ? '✗' : '✓'} ${this.state.bids[i]}</span>`;
                 }
             }
 
