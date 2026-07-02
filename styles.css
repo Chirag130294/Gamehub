@@ -88,7 +88,16 @@ input { font-family: inherit; color: inherit; width: 100%; padding: clamp(10px, 
 .kf-grid { display: flex; flex-direction: row; gap: clamp(8px, 2vw, 15px); }
 .kf-players-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
 .kf-action-col { width: clamp(70px, 18vw, 90px); flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: clamp(5px, 2vw, 10px); }
-.kf-player-row { display: flex; align-items: center; justify-content: space-between; padding: clamp(4px, 1vh, 8px) 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.kf-player-row { 
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0; 
+    border-bottom: 1px solid rgba(255,255,255,0.05); 
+    /* Force a fixed height to prevent layout jumps during state switches */
+    height: 52px; 
+    min-height: 52px;
+    overflow: hidden;
+    transition: none; 
+}
 .kf-player-row:last-child { border-bottom: none; }
 .kf-name { font-weight: 700; font-size: clamp(0.9rem, 3.5vw, 1rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: clamp(65px, 20vw, 100px); }
 
