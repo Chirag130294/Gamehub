@@ -412,13 +412,14 @@ renderHostLobby() {
         if(!this.checkWinCondition()) this.broadcastState();
     },
 
-    checkWinCondition() {
+   checkWinCondition() {
         const alive = Object.values(this.gameState.players).filter(p => p.status === 'ALIVE');
         const aliveMafia = alive.filter(p => p.role === 'Mafia').length;
         const aliveVillagers = alive.length - aliveMafia;
 
+        // Game only ends if Mafia is wiped out (Voted out) OR Villagers are completely wiped out.
         if (aliveMafia === 0) { this.endGame('VILLAGERS WIN', 'The Kaali Toli is destroyed.', 'fa-sun text-yellow-500', 'text-yellow-500'); return true; } 
-        else if (aliveMafia >= aliveVillagers) { this.endGame('MAFIA WINS', 'The Pol has been taken over.', 'fa-user-secret text-red-600', 'text-red-500'); return true; }
+        else if (aliveVillagers === 0) { this.endGame('MAFIA WINS', 'The Pol has been taken over.', 'fa-user-secret text-red-600', 'text-red-500'); return true; }
         return false;
     },
 
