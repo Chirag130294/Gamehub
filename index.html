@@ -147,9 +147,9 @@
                         <div id="kf-trump-card" class="card-thumbnail-large"><span id="kf-card-symbol" style="color:var(--suit-black);">♠</span></div>
                         <div id="kf-card-count" class="card-count-text">5 Cards</div>
                         <div id="kf-round-label" class="round-text">R1</div>
-                        <div class="host-only" style="width: 100%; margin-top: auto;">
-                            <button id="kf-btn-action" class="action-icon-btn btn-lock" onclick="KFEngine.handleAction()"><i class="fa-solid fa-lock"></i></button>
-                        </div>
+                       <div class="host-only" style="width: 100%;">
+    <button id="kf-btn-action" class="action-icon-btn btn-lock" onclick="KFEngine.handleAction()"><i class="fa-solid fa-lock"></i></button>
+</div>
                     </div>
                 </div>
                 <div id="kf-warning-msg" class="text-center font-bold mb-2 hidden" style="color:var(--red); text-shadow: 0 2px 4px rgba(0,0,0,0.5);"></div>
@@ -186,13 +186,13 @@
  <div id="view-mafia" class="view-section">
             <div id="mafia-wrapper" class="w-full text-gray-100 font-sans relative pb-20">
                 
-                <div id="mafia-top-bar" class="hidden absolute top-4 left-4 z-40 flex items-center gap-3 bg-gray-900/95 p-2 rounded-xl border border-gray-600 backdrop-blur-md shadow-[0_5px_15px_rgba(0,0,0,0.8)]">
-                    <img id="mafia-my-avatar" src="" class="w-10 h-10 rounded-full bg-gray-800 border-2 border-gray-500 shadow-inner">
-                    <div class="flex flex-col pr-2">
-                        <span id="mafia-my-name" class="text-white font-black text-sm tracking-wide leading-none"></span>
-                        <span id="mafia-my-persona" class="text-yellow-500 font-bold text-[9px] uppercase tracking-widest mt-1 leading-none"></span>
-                    </div>
-                </div>
+            <div id="mafia-top-bar" class="hidden mx-4 mt-4 mb-2 z-40 flex items-center gap-3 bg-gray-900/95 p-3 rounded-xl border border-gray-600 backdrop-blur-md shadow-[0_5px_15px_rgba(0,0,0,0.8)]">
+    <img id="mafia-my-avatar" src="" class="w-12 h-12 flex-shrink-0 rounded-full bg-gray-800 border-2 border-gray-500 shadow-inner">
+    <div class="flex flex-col flex-grow overflow-hidden pr-2">
+        <span id="mafia-my-name" class="text-white font-black text-sm tracking-wide truncate"></span>
+        <span id="mafia-my-persona" class="text-yellow-500 font-bold text-[10px] uppercase tracking-widest mt-1 truncate"></span>
+    </div>
+</div>
                 
                 <div id="mafia-reconnect-banner" class="hidden w-full mb-4 bg-blue-900/80 border border-blue-500 p-4 rounded-xl shadow-xl flex justify-between items-center backdrop-blur z-50 mt-4 mx-4" style="width: calc(100% - 32px);">
                     <div>
