@@ -680,11 +680,42 @@ renderHostLobby() {
         this.showScreen('mafia-screen-vibe');
         if (event === 'ADD_TIME') document.getElementById('khari-plate').classList.add('khari-visible');
         
-        let news = `<h4 class="font-black text-red-500 tracking-widest">MORNING NEWS</h4>`;
-        if (this.gameState.lastKilledName === "NO ONE") news += `<p class="text-sm text-gray-300 mt-1 font-bold">The Pol was quiet. <span class="text-green-500">No one died!</span></p>`;
-        else news += `<p class="text-sm text-gray-300 mt-1 font-bold">Tragedy struck. <span class="text-red-500 font-black">${this.gameState.lastKilledName}</span> was eliminated!</p>`;
-        document.getElementById('mafia-morning-announcement').innerHTML = news;
+        // --- NEW: Rooster Word-Spill Logic ---
+        const announceContainer = document.getElementById('mafia-morning-announcement');
+        announceContainer.innerHTML = ''; // Clear old text
         
+        let rawText = this.gameState.lastKilledName === "NO ONE" 
+            ? "Kukdoo-koo! The Pol is safe today! No one died!" 
+            : `Arre re! Tragedy! ${this.gameState.lastKilledName} was eliminated!`;
+        
+        const words = rawText.split(' ');
+        let currentWordIndex = 0;
+
+        // Clear any existing interval to prevent overlap if screen re-renders
+        if (this.spillInterval) clearInterval(this.spillInterval);
+
+        this.spillInterval = setInterval(() => {
+            if (currentWordIndex >= words.length) {
+                clearInterval(this.spillInterval);
+                return;
+            }
+
+            let word = words[currentWordIndex];
+            // Add dynamic colors to specific keywords
+            if (word.includes(this.gameState.lastKilledName) && this.gameState.lastKilledName !== "NO ONE") {
+                word = `<span class="text-red-600">${word}</span>`;
+            } else if (word.includes("safe") || word.includes("No")) {
+                word = `<span class="text-green-600">${word}</span>`;
+            }
+
+            const wordSpan = document.createElement('span');
+            wordSpan.className = 'word-spill';
+            wordSpan.innerHTML = word;
+            announceContainer.appendChild(wordSpan);
+
+            currentWordIndex++;
+        }, 300); // Pops a new word every 300ms
+
         if (this.isHost) document.getElementById('mafia-host-override-panel').classList.remove('hidden');
 
         if(this.clientAnimFrame) cancelAnimationFrame(this.clientAnimFrame);
