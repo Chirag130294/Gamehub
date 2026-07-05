@@ -299,3 +299,55 @@ th { background: rgba(0,0,0,0.6); color: var(--text-muted); }
 
 #view-mafia .scale-in { transform: scale(1) !important; }
 #view-mafia .fade-in { opacity: 1 !important; }
+
+/* --- MAFIA SKY & CELESTIAL ANIMATIONS --- */
+.sky-sunset-anim {
+    background: linear-gradient(to bottom, #1e1b4b, #0f172a, #000000);
+    background-size: 100% 200%;
+    animation: sunsetSky 4s ease-out forwards;
+}
+@keyframes sunsetSky {
+    0% { background-position: 100% 0%; opacity: 0; }
+    100% { background-position: 100% 100%; opacity: 1; }
+}
+.moon-anim { animation: moonRise 3s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+@keyframes moonRise {
+    0% { transform: translateY(100px) scale(0.8); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.sky-sunrise-anim {
+    background: linear-gradient(to bottom, #38bdf8, #0ea5e9, #1e3a8a);
+    background-size: 100% 200%;
+    animation: sunriseSky 4s ease-out forwards;
+}
+@keyframes sunriseSky {
+    0% { background-position: 100% 100%; opacity: 0; }
+    100% { background-position: 100% 0%; opacity: 1; }
+}
+.sun-anim { animation: sunRise 4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+@keyframes sunRise {
+    0% { transform: translate(-50%, 150px) scale(0.8); opacity: 0; }
+    100% { transform: translate(-50%, -150px) scale(1); opacity: 1; }
+}
+
+/* --- ROOSTER & WORD SPILL ANIMATIONS --- */
+.animate-bounce-slight { animation: bounceSlight 2s infinite ease-in-out; }
+@keyframes bounceSlight {
+    0%, 100% { transform: scaleX(-1) translateY(0); }
+    50% { transform: scaleX(-1) translateY(-5px); }
+}
+
+.word-spill {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.8);
+    animation: popWord 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes popWord {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+
+
+
+
