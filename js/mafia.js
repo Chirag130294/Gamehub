@@ -625,7 +625,12 @@ renderHostLobby() {
         this.selectedTargetId = null; 
         document.getElementById('btn-confirm-night').disabled = true; document.getElementById('btn-confirm-night').classList.add('opacity-50', 'cursor-not-allowed');
 
-        let aliveTargets = Object.values(this.gameState.players).filter(p => p.status === 'ALIVE' && p.id !== this.myId).sort(() => Math.random() - 0.5);
+        // Allow the Doctor to see their own name in the target list
+        let aliveTargets = Object.values(this.gameState.players).filter(p => {
+            if (p.status !== 'ALIVE') return false;
+            if (p.id === this.myId && myData.role !== 'Doctor') return false; // Hide self unless Doctor
+            return true;
+        }).sort(() => Math.random() - 0.5);
 
         aliveTargets.forEach(p => {
             const li = document.createElement('li');
@@ -635,7 +640,8 @@ renderHostLobby() {
                 document.querySelectorAll('#mafia-night-target-list .list-item-btn').forEach(el => el.classList.remove('selected'));
                 li.classList.add('selected');
                 this.selectedTargetId = p.id;
-                document.getElementById('btn-confirm-night').disabled = false; document.getElementById('btn-confirm-night').classList.remove('opacity-50', 'cursor-not-allowed');
+                document.getElementById('btn-confirm-night').disabled = false; 
+                document.getElementById('btn-confirm-night').classList.remove('opacity-50', 'cursor-not-allowed');
             };
             list.appendChild(li);
         });
@@ -827,18 +833,18 @@ renderHostLobby() {
     },
 
    showScreen(screenId) {
-        document.querySelectorAll('#view-mafia div[id^="mafia-screen-"]').forEach(el => { el.classList.add('screen-hidden'); el.classList.remove('screen-active'); });
         const target = document.getElementById(screenId);
+        
+        // Prevent re-rendering and flashing if we are already on this screen
+        if (target && target.classList.contains('screen-active')) return;
+
+        document.querySelectorAll('#view-mafia div[id^="mafia-screen-"]').forEach(el => { el.classList.add('screen-hidden'); el.classList.remove('screen-active'); });
 
         // --- NEW: Toggle Inner Mafia Top Bar ---
         const innerTopBar = document.getElementById('mafia-top-bar');
         if (innerTopBar) {
-            // Keep it hidden on the login screen to save space, show it everywhere else
-            if (screenId === 'mafia-screen-login') {
-                innerTopBar.classList.add('hidden');
-            } else {
-                innerTopBar.classList.remove('hidden');
-            }
+            if (screenId === 'mafia-screen-login') { innerTopBar.classList.add('hidden'); } 
+            else { innerTopBar.classList.remove('hidden'); }
         }
 
         if(target) {
