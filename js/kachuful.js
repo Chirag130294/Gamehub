@@ -114,7 +114,7 @@ const KFEngine = {
         document.getElementById('kf-total-bids-val').innerText = `${currTot}`;
         
         if (this.state.phase === 'bid') {
-            if (currTot === cards) totalBidsContainer.classList.add('danger-zone');
+            if (currTot >= cards) totalBidsContainer.classList.add('danger-zone');
             else totalBidsContainer.classList.remove('danger-zone');
         } else {
             totalBidsContainer.classList.remove('danger-zone');
