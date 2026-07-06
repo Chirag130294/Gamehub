@@ -497,7 +497,29 @@
             </div>
         </div>
     </div>
+<!-- NETWORK FREEZE OVERLAY -->
+    <div id="network-freeze-overlay" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; color:#fff; backdrop-filter: blur(5px);">
+        <i class="fa-solid fa-wifi fa-fade" style="font-size:3rem; color:var(--red); margin-bottom:15px;"></i>
+        <h2 style="font-weight:900; letter-spacing:2px; font-size:1.5rem;">CONNECTION LOST</h2>
+        <p style="color:var(--text-muted); font-weight:700; margin-top:5px;">Waiting for network to resume...</p>
+    </div>
 
+    <!-- KACHUFUL SLIDER MODAL (For Void/Edit/End Game) -->
+    <div id="kf-slide-modal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:5000; backdrop-filter: blur(10px);">
+        <div style="background:rgba(22, 27, 34, 0.95); padding:30px; border-radius:15px; border:1px solid var(--red); text-align:center; width:300px; box-shadow:0 15px 40px rgba(0,0,0,0.8);">
+            <i class="fa-solid fa-triangle-exclamation text-4xl mb-4" style="color:var(--red);"></i>
+            <h3 id="kf-slide-modal-title" style="font-size:0.8rem; font-weight:900; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; margin-bottom:25px;">Confirm Action</h3>
+            
+            <div id="kf-slide-track" style="background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); border-radius:50px; height:50px; position:relative; display:flex; align-items:center; padding:0 4px; overflow:hidden; margin-bottom:20px;">
+                <div id="kf-slide-thumb" style="background:linear-gradient(90deg, var(--red), #8b1c1c); width:40px; height:40px; border-radius:50%; cursor:grab; position:absolute; left:4px; display:flex; align-items:center; justify-content:center; color:white; z-index:10; box-shadow:0 0 10px rgba(218,54,51,0.5); transition: transform 0.1s;">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <div id="kf-slide-progress" style="background:rgba(218,54,51,0.3); position:absolute; left:0; height:100%; width:0; border-radius:50px 0 0 50px;"></div>
+                <span style="font-size:0.7rem; font-weight:800; color:gray; text-transform:uppercase; letter-spacing:1.5px; margin:0 auto; pointer-events:none;">Slide to Confirm</span>
+            </div>
+            <button class="btn-ghost" onclick="KFEngine.cancelSlide()">Cancel</button>
+        </div>
+    </div>
     <!-- SCRIPTS - CORRECTED DEPENDENCY ORDER -->
     <script src="js/hub.js"></script>
     <script src="js/network.js"></script>
