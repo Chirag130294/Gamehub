@@ -214,7 +214,6 @@ const KFEngine = {
                 if (statBtn) statBtn.style.display = 'none';
                 if (stepper) stepper.style.display = 'flex';
                 
-                // Clear all click events and visual classes during bidding
                 if (rowEl) { rowEl.onclick = null; }
                 if (nameEl) { 
                     nameEl.onclick = null; 
@@ -241,12 +240,11 @@ const KFEngine = {
                     }
                     statBtn.innerHTML = `<span>${this.state.misses[i] ? 'MISS' : 'MADE'} ${this.state.bids[i]}</span>`;
 
-                    // Remove row click, assign to NAME and BUTTON
                     if (rowEl) { rowEl.onclick = null; }
                     
                     if (nameEl) {
                         nameEl.onclick = () => KFEngine.togMiss(i);
-                        nameEl.classList.add('clickable-name'); // Adds the hover/glow effect
+                        nameEl.classList.add('clickable-name'); 
                     }
                     
                     statBtn.onclick = (e) => { e.stopPropagation(); KFEngine.togMiss(i); };
