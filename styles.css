@@ -179,4 +179,33 @@ th { background: rgba(0,0,0,0.6); color: var(--text-muted); }
 #view-mafia .steam { position: absolute; width: 6px; height: 25px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; opacity: 0; filter: blur(3px); animation: mafiaRise 2.5s infinite ease-in; z-index: 20; }
 #view-mafia .steam-1 { left: 25%; top: -20px; animation-delay: 0s; }
 #view-mafia .steam-2 { left: 50%; top: -30px; animation-delay: 0.8s; }
-#view-mafia .steam-3 { left: 75%; top: -20px; animation-delay
+#view-mafia .steam-3 { left: 75%; top: -20px; animation-delay: 1.6s; }
+
+@keyframes mafiaRise { 0% { transform: translateY(0) scale(1); opacity: 0.7; } 100% { transform: translateY(-70px) scale(3); opacity: 0; } }
+
+#view-mafia .khari-hidden { opacity: 0; transform: translateX(60px) rotate(15deg); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+#view-mafia .khari-visible { opacity: 1; transform: translateX(0) rotate(0deg); }
+
+#view-mafia .custom-scroll::-webkit-scrollbar { width: 6px; }
+#view-mafia .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+#view-mafia .custom-scroll::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+#view-mafia .custom-scroll::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+
+#view-mafia .scale-in { transform: scale(1) !important; }
+#view-mafia .fade-in { opacity: 1 !important; }
+
+/* Escape Hatch Button for Spectators */
+.spectator-escape-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(218, 54, 51, 0.2);
+    border: 1px solid var(--red);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    z-index: 10;
+}
