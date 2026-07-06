@@ -9,6 +9,7 @@
     overflow: hidden; 
 }
 
+/* --- 1. Trump Reveal Splash + Ongoing Breathe --- */
 #view-kachuful #kf-trump-card {
     position: absolute;
     top: 50%;
@@ -40,6 +41,7 @@
     50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.2; filter: drop-shadow(0 0 40px currentColor); }
 }
 
+/* --- 2. Layout & Spacing Adjustments --- */
 #view-kachuful .kf-player-row {
     z-index: 2; 
     position: relative;
@@ -56,7 +58,9 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    width: clamp(120px, 45%, 300px); 
+    /* FIX: Solid 70% width to lock the spectator bid text to the right mark */
+    width: 70%; 
+    max-width: 300px;
     flex-shrink: 0;
 }
 
@@ -78,6 +82,7 @@
     transform: scale(1.02);
 }
 
+/* --- 3. The Physical Ink Stamps --- */
 #view-kachuful .status-pill {
     border: clamp(2px, 0.5vw, 3px) solid;
     background: transparent !important;
@@ -108,17 +113,20 @@
     100% { transform: scale(1) rotate(6deg); opacity: 1; filter: drop-shadow(0 0 0 transparent); }
 }
 
+/* --- 4. The Dynamic Progress Bar --- */
 #view-kachuful .kf-progress-track {
     width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; margin-top: 2px;
 }
 #view-kachuful .kf-progress-fill {
     height: 100%; background: linear-gradient(90deg, var(--blue), var(--gold)); box-shadow: 0 0 5px var(--gold); transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1); position: relative; overflow: hidden;
 }
+/* FIX: Muted shine animation so it's not distracting for spectators */
 #view-kachuful .kf-progress-fill::after {
-    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent); animation: glassShine 2.5s infinite;
+    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent); animation: glassShine 4s infinite;
 }
 @keyframes glassShine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 
+/* --- 5. The "Total Bids" Counter --- */
 #view-kachuful .total-bids-container {
     text-align: center; margin-bottom: 10px; padding: clamp(4px, 1vw, 6px); background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s;
 }
@@ -129,6 +137,7 @@
 #view-kachuful .counter-pop { animation: popScale 0.3s ease-out; }
 @keyframes popScale { 0% { transform: scale(1); } 50% { transform: scale(1.15); color: var(--gold); } 100% { transform: scale(1); } }
 
+/* --- 6. Text Ping & Arrow Animations --- */
 .text-ping { display: inline-block; animation: textGrowFlash 1.5s ease-out forwards; }
 @keyframes textGrowFlash { 0% { color: var(--text); text-shadow: none; transform: scale(1); } 15% { color: var(--gold); text-shadow: 0 0 12px var(--gold); transform: scale(1.15); } 100% { color: var(--text); text-shadow: none; transform: scale(1); } }
 
@@ -139,6 +148,7 @@
 @keyframes arrowFloatUp { 0% { opacity: 0; transform: translateY(10px); } 20% { opacity: 1; transform: translateY(-3px); } 80% { opacity: 1; transform: translateY(-3px); } 100% { opacity: 0; transform: translateY(-10px); } }
 @keyframes arrowFloatDown { 0% { opacity: 0; transform: translateY(-10px); } 20% { opacity: 1; transform: translateY(3px); } 80% { opacity: 1; transform: translateY(3px); } 100% { opacity: 0; transform: translateY(10px); } }
 
+/* --- 7. Action Column Typography --- */
 #view-kachuful .kf-action-col { justify-content: center !important; gap: 15px !important; }
 #view-kachuful .kf-action-col .host-only { margin-top: 0 !important; }
 
@@ -155,6 +165,7 @@
 }
 #view-kachuful #kf-round-label { font-size: clamp(1rem, 3vw, 1.5rem) !important; letter-spacing: 2px; }
 
+/* --- 8. Lock Tremor & Particles --- */
 #view-kachuful .phase-locked { animation: boardTremor 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
 @keyframes boardTremor { 0% { transform: translate(0, 0) rotate(0deg); } 20% { transform: translate(-2px, -1px) rotate(-1deg); } 40% { transform: translate(2px, 1px) rotate(1deg); } 60% { transform: translate(-2px, 1px) rotate(0deg); } 80% { transform: translate(1px, -1px) rotate(-1deg); } 100% { transform: translate(0, 0) rotate(0deg); } }
 
@@ -170,19 +181,3 @@
     z-index: 9999;
 }
 @keyframes floatScaleUpAndFade { 0% { transform: translateY(10px) scale(0.2); opacity: 0; } 20% { transform: translateY(-5px) scale(1.2); opacity: 1; } 100% { transform: translateY(-60px) scale(1.5); opacity: 0; } }
-
-/* Spectator Escape Button */
-.spectator-escape-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: rgba(218, 54, 51, 0.2);
-    border: 1px solid var(--red);
-    color: var(--text);
-    padding: 6px 12px;
-    border-radius: var(--radius-md);
-    font-size: 0.7rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    z-index: 10;
-}
