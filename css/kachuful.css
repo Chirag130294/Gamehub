@@ -1,5 +1,6 @@
 /* =========================================
    KACHUFUL SPECIFIC STYLES & ANIMATIONS
+   (FULLY RESPONSIVE SCALING)
    ========================================= */
 
 #view-kachuful .kf-players-col {
@@ -9,12 +10,13 @@
 }
 
 /* --- 1. Trump Reveal Splash + Ongoing Breathe --- */
+/* SCALED: Uses vmin so it perfectly fits regardless of portrait or landscape orientation */
 #view-kachuful #kf-trump-card {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 55vh; 
+    font-size: clamp(150px, 45vmin, 450px); 
     z-index: 0; 
     pointer-events: none; 
     background: transparent !important;
@@ -26,7 +28,7 @@
 #view-kachuful #kf-trump-card.splash-active {
     animation: 
         watermarkSplash 1.5s ease-out forwards, 
-        watermarkBreathe 4s infinite ease-in-out 1.5s;
+        watermarkBreathe 4s infinite ease-in-out 1.5s !important;
 }
 
 @keyframes watermarkSplash {
@@ -46,25 +48,26 @@
     position: relative;
     overflow: visible !important; 
     border-bottom: 1px solid rgba(255,255,255,0.05);
-    padding: 10px 5px; 
+    padding: clamp(8px, 2vw, 12px) 5px; 
     display: flex;
     align-items: center;
     justify-content: flex-start !important; 
-    gap: 10px; 
+    /* SCALED: Gap shrinks on mobile, expands on laptop */
+    gap: clamp(10px, 4vw, 35px); 
 }
 
 #view-kachuful .kf-player-info-group {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    width: 70%; /* Set to your preferred 70% */
-    min-width: 140px; 
+    /* SCALED: Width adapts safely between mobile and desktop */
+    width: clamp(120px, 45%, 300px); 
     flex-shrink: 0;
 }
 
 #view-kachuful .kf-name {
     font-weight: 800; 
-    font-size: clamp(0.85rem, 2vh, 1.1rem); 
+    font-size: clamp(0.85rem, 3vw, 1.2rem); 
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: ellipsis; 
@@ -72,10 +75,7 @@
     transition: color 0.2s, text-shadow 0.2s, transform 0.2s;
 }
 
-/* NEW: Interactive styling so the host knows the name is a button during scoring */
-#view-kachuful .kf-name.clickable-name {
-    cursor: pointer;
-}
+#view-kachuful .kf-name.clickable-name { cursor: pointer; }
 #view-kachuful .kf-name.clickable-name:hover,
 #view-kachuful .kf-name.clickable-name:active {
     color: var(--gold);
@@ -85,17 +85,19 @@
 
 /* --- 3. The Physical Ink Stamps --- */
 #view-kachuful .status-pill {
-    border: 3px solid;
+    border: clamp(2px, 0.5vw, 3px) solid;
     background: transparent !important;
-    font-size: 1.1rem !important;
+    /* SCALED: Text inside the stamp adapts to screen size */
+    font-size: clamp(0.7rem, 2.5vw, 1.1rem) !important;
     text-transform: uppercase;
     font-weight: 900;
     border-radius: 8px;
-    padding: 4px 12px !important;
+    padding: clamp(3px, 1vw, 4px) clamp(6px, 2vw, 12px) !important;
     display: inline-block;
     box-shadow: none !important;
     margin-left: 0 !important;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 #view-kachuful .pill-made { color: var(--green) !important; border-color: var(--green) !important; }
@@ -113,7 +115,7 @@
     100% { transform: scale(1) rotate(6deg); opacity: 1; filter: drop-shadow(0 0 0 transparent); }
 }
 
-/* --- 4. The Dynamic Progress Bar with Glass Shine --- */
+/* --- 4. The Dynamic Progress Bar --- */
 #view-kachuful .kf-progress-track {
     width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; margin-top: 2px;
 }
@@ -127,10 +129,10 @@
 
 /* --- 5. The "Total Bids" Counter --- */
 #view-kachuful .total-bids-container {
-    text-align: center; margin-bottom: 10px; padding: 5px; background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s;
+    text-align: center; margin-bottom: 10px; padding: clamp(4px, 1vw, 6px); background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s;
 }
-#view-kachuful .total-bids-text { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-#view-kachuful .total-bids-numbers { font-size: 1.5rem; font-weight: 900; color: white; font-family: 'Courier New', Courier, monospace; }
+#view-kachuful .total-bids-text { font-size: clamp(0.55rem, 2vw, 0.7rem); font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+#view-kachuful .total-bids-numbers { font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 900; color: white; font-family: 'Courier New', Courier, monospace; }
 #view-kachuful .danger-zone { background: rgba(218, 54, 51, 0.2); border-color: var(--red); box-shadow: 0 0 15px rgba(218, 54, 51, 0.4); }
 #view-kachuful .danger-zone .total-bids-numbers { color: var(--red); }
 #view-kachuful .counter-pop { animation: popScale 0.3s ease-out; }
@@ -140,7 +142,8 @@
 .text-ping { display: inline-block; animation: textGrowFlash 1.5s ease-out forwards; }
 @keyframes textGrowFlash { 0% { color: var(--text); text-shadow: none; transform: scale(1); } 15% { color: var(--gold); text-shadow: 0 0 12px var(--gold); transform: scale(1.15); } 100% { color: var(--text); text-shadow: none; transform: scale(1); } }
 
-.arrow-slot { display: inline-block; opacity: 0; font-size: 1rem; margin-left: 6px; }
+/* SCALED: Arrow adapts to text size */
+.arrow-slot { display: inline-block; opacity: 0; font-size: clamp(0.8rem, 3vw, 1rem); margin-left: 6px; }
 .arrow-slot.active.up { color: var(--green); animation: arrowFloatUp 1.5s ease-out forwards; }
 .arrow-slot.active.down { color: var(--red); animation: arrowFloatDown 1.5s ease-out forwards; }
 
@@ -151,9 +154,10 @@
 #view-kachuful .kf-action-col { justify-content: center !important; gap: 15px !important; }
 #view-kachuful .kf-action-col .host-only { margin-top: 0 !important; }
 
+/* SCALED: Massive number correctly sizes down for mobile */
 #view-kachuful #kf-card-count {
     font-family: 'Courier New', Courier, monospace !important; 
-    font-size: 4.8rem !important; 
+    font-size: clamp(2.8rem, 10vw, 4.8rem) !important; 
     font-weight: 900 !important;
     color: var(--gold) !important;
     background: transparent !important; 
@@ -162,13 +166,22 @@
     text-shadow: 0 4px 15px rgba(0,0,0,0.8);
     line-height: 1;
 }
-#view-kachuful #kf-round-label { font-size: 1.5rem !important; letter-spacing: 2px; }
+#view-kachuful #kf-round-label { font-size: clamp(1rem, 3vw, 1.5rem) !important; letter-spacing: 2px; }
 
 /* --- 8. Lock Tremor & Particles --- */
 #view-kachuful .phase-locked { animation: boardTremor 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
 @keyframes boardTremor { 0% { transform: translate(0, 0) rotate(0deg); } 20% { transform: translate(-2px, -1px) rotate(-1deg); } 40% { transform: translate(2px, 1px) rotate(1deg); } 60% { transform: translate(-2px, 1px) rotate(0deg); } 80% { transform: translate(1px, -1px) rotate(-1deg); } 100% { transform: translate(0, 0) rotate(0deg); } }
 
+/* SCALED: Particles adapt so they don't look overly huge on phones */
 .floating-points {
-    position: absolute; font-family: 'Courier New', Courier, monospace; font-size: 2.5rem; font-weight: 900; color: var(--green); pointer-events: none; animation: floatScaleUpAndFade 1.6s ease-out forwards; text-shadow: 0 4px 15px rgba(0,0,0,1); z-index: 9999;
+    position: absolute;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
+    font-weight: 900;
+    color: var(--green);
+    pointer-events: none;
+    animation: floatScaleUpAndFade 1.6s ease-out forwards;
+    text-shadow: 0 4px 15px rgba(0,0,0,1);
+    z-index: 9999;
 }
 @keyframes floatScaleUpAndFade { 0% { transform: translateY(10px) scale(0.2); opacity: 0; } 20% { transform: translateY(-5px) scale(1.2); opacity: 1; } 100% { transform: translateY(-60px) scale(1.5); opacity: 0; } }
