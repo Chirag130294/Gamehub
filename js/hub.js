@@ -1,3 +1,4 @@
+// js/hub.js
 const GujaratLoader = {
     places: [
         { t: "Atal Bridge, Ahmedabad", d: "A spectacular pedestrian bridge over the Sabarmati River inspired by vibrant kite festivals.", img: "assets/img/places/atal_bridge.jpg" },
@@ -23,7 +24,7 @@ const GujaratLoader = {
         }, 8500); 
     },
     
-  update() {
+    update() {
         const currentPlace = this.places[this.idx];
         const img = new Image();
         
@@ -52,45 +53,58 @@ const GujaratLoader = {
 };
 
 const HubEngine = {
-    // 1. Add hostName to state
-    state: { currentView: 'hub', pendingNames: [], pendingGame: null, hostName: null },
+    // ADDED: lastActionTime hook
+    state: { currentView: 'hub', pendingNames: [], pendingGame: null, hostName: null, lastActionTime: 0 },
     html5QrcodeScanner: null,
     wakeLock: null,
 
     async requestWakeLock() {
         if ('wakeLock' in navigator) {
             try { 
-                // Only request if we don't already have an active lock
                 if (this.wakeLock !== null && !this.wakeLock.released) return;
                 this.wakeLock = await navigator.wakeLock.request('screen'); 
                 console.log("Wake Lock active");
-            } 
-            catch (err) { console.warn("Wake Lock Failed:", err); }
+            } catch (err) { console.warn("Wake Lock Failed:", err); }
         }
     },
 
-   init() {
-        // Attempt on load (often blocked, but good to try)
+    // CENTRALIZED PING TO PREVENT GHOST LOBBIES
+    pingAction() {
+        this.state.lastActionTime = Date.now();
+        localStorage.setItem('hub_master_config', JSON.stringify(this.state));
+    },
+
+    init() {
         this.requestWakeLock();
-        
-        // The foolproof method: bind to any user interaction globally
-        const lockHandler = () => {
-            this.requestWakeLock();
-        };
-        
+        const lockHandler = () => this.requestWakeLock();
         document.addEventListener('click', lockHandler, { passive: true });
         document.addEventListener('touchstart', lockHandler, { passive: true });
-
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') this.requestWakeLock();
         });
 
         const raw = localStorage.getItem('hub_master_config');
-        if (raw) { try { this.state = JSON.parse(raw); } catch (e) {} }
+        if (raw) { 
+            try { 
+                const savedState = JSON.parse(raw); 
+                const now = Date.now();
+                // ROLLING EXPIRY WIPE: If dead for > 12 hours, purge everything.
+                if (savedState.lastActionTime && (now - savedState.lastActionTime > 43200000)) {
+                    localStorage.removeItem('kf_host_state');
+                    localStorage.removeItem('kf_spectator_state');
+                    localStorage.removeItem('kt_host_state');
+                    localStorage.removeItem('kt_spectator_state');
+                    localStorage.removeItem('mafia_host_state');
+                    localStorage.removeItem('mafia_player_session');
+                    savedState.currentView = 'hub';
+                    savedState.pendingGame = null;
+                }
+                this.state = savedState; 
+            } catch (e) {} 
+        }
         
         this.setGreeting(); 
 
-        // Auto-fill Room Code if clicked from a shared link
         const urlParams = new URLSearchParams(window.location.search);
         const roomParam = urlParams.get('room');
         if (roomParam) {
@@ -98,28 +112,25 @@ const HubEngine = {
             if (joinInput) joinInput.value = roomParam.toUpperCase();
         }
 
-        // --- NEW: Network Session Hydration Hook ---
         if (typeof NetworkEngine !== 'undefined') {
             if (NetworkEngine.restoreSession()) {
                 if (NetworkEngine.role === 'host') {
                     NetworkEngine.initHost(NetworkEngine.gameType);
                 } else {
-                    NetworkEngine.joinAsSpectator(true); // true = force reconnect
+                    NetworkEngine.joinAsSpectator(true);
                 }
             }
         }
-        // -------------------------------------------
 
         this.switchView(this.state.currentView);
     },
 
-    // 2. New function to save the global host
     saveGlobalHost() {
         const name = document.getElementById('global-host-name').value.trim();
         if (!name) return alert("Please enter a host name.");
         
         this.state.hostName = name;
-        localStorage.setItem('hub_master_config', JSON.stringify(this.state));
+        this.pingAction(); 
         document.getElementById('modal-host-setup').classList.add('hidden');
         
         if (this.state.pendingGame) {
@@ -144,6 +155,7 @@ const HubEngine = {
         let baseNames = names.map(n => n.replace(/\s\d+$/, '')); 
         saved = [...new Set([...baseNames, ...saved])].slice(0, 15); 
         localStorage.setItem('hub_saved_players', JSON.stringify(saved));
+        this.pingAction();
     },
 
     renderSavedPlayers(gamePrefix) {
@@ -168,30 +180,26 @@ const HubEngine = {
         document.getElementById('menu-overlay').classList.toggle('open');
     },
 
-initLobby(gameId) {
-        // --- NEW: Intercept for Global Host Identity ---
+    initLobby(gameId) {
         if (!this.state.hostName && typeof NetworkEngine !== 'undefined' && NetworkEngine.role === 'host') {
             this.state.pendingGame = gameId;
             document.getElementById('modal-host-setup').classList.remove('hidden');
             return;
         }
-        // -----------------------------------------------
 
-        // ... rest of your existing initLobby code ...
-        // FIX: Deep wipe engine state AND reset visual DOM panels to guarantee clean start
         if (gameId === 'kachuful' && typeof KFEngine !== 'undefined') {
             KFEngine.state = { players: [], names: [], max: 5, round: 1, bids: [], misses: [], phase: 'bid', history: [], suspendedState: null, editingOldRecordData: null };
             localStorage.removeItem('kf_host_state');
             document.getElementById('kf-active-panel').style.display = 'none';
             document.getElementById('kf-setup-panel').style.display = 'block';
-            document.getElementById('kf-players-input').value = ''; // Optional: clears old input
+            document.getElementById('kf-players-input').value = ''; 
         }
         if (gameId === 'kalitiri' && typeof KTEngine !== 'undefined') {
             KTEngine.state = { players: [], trump: [], opp: [], score: 250, win: "", history: [] };
             localStorage.removeItem('kt_host_state');
             document.getElementById('kt-active-panel').style.display = 'none';
             document.getElementById('kt-setup-panel').style.display = 'block';
-            document.getElementById('kt-players-input').value = ''; // Optional: clears old input
+            document.getElementById('kt-players-input').value = ''; 
         }
         
         this.state.pendingGame = gameId;
@@ -213,19 +221,16 @@ initLobby(gameId) {
                     width: 160, height: 160, colorDark: "#000000", colorLight: "#ffffff"
                 });
             } else {
-                qrContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">QR Library blocked or missing</span>';
+                qrContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">QR Library blocked</span>';
             }
         }
     },
 
- continueToSetup() { 
+    continueToSetup() { 
         this.switchView(this.state.pendingGame); 
-
-        // If transitioning to Mafia from the QR Lobby, auto-start the host engine silently
         if (this.state.pendingGame === 'mafia' && typeof MafiaEngine !== 'undefined') {
             MafiaEngine.gameState.hostName = this.state.hostName;
             MafiaEngine.isHost = true;
-            // Sync Mafia's room ID with the one just generated by the Hub's NetworkEngine
             MafiaEngine.roomId = NetworkEngine.roomCode; 
             MafiaEngine.connectMQTT('HOST_NEW');
         }
@@ -243,11 +248,10 @@ initLobby(gameId) {
         document.getElementById('modal-viewers').classList.remove('hidden');
     },
 
-showRoomPanel() {
+    showRoomPanel() {
         const panel = document.getElementById('room-manage-panel');
         let code = '';
         
-        // --- NEW: Smart Room Code Detection ---
         if (this.state.currentView === 'mafia' && typeof MafiaEngine !== 'undefined') code = MafiaEngine.roomId;
         else if (typeof NetworkEngine !== 'undefined') code = NetworkEngine.roomCode;
         
@@ -263,7 +267,6 @@ showRoomPanel() {
         panel.classList.remove('hidden');
     },
 
-// --- NEW: Hybrid Join Logic ---
     async joinAsSpectator() {
         const codeInput = document.getElementById('join-room-code');
         const nameInput = document.getElementById('join-player-name');
@@ -274,25 +277,19 @@ showRoomPanel() {
         if (!code) return alert("Please enter a room code.");
         if (!name) return alert("Please enter your name.");
 
-        // Probe the room to see what game is running
         const game = await NetworkEngine.probeRoom(code);
         
         if (game === 'mafia') {
-            // Redirect to Mafia setup view and pre-fill both code AND name
             this.switchView('mafia');
             const joinCodeInput = document.getElementById('mafia-join-code');
             const joinNameInput = document.getElementById('mafia-player-name');
-            
             if(joinCodeInput) joinCodeInput.value = code;
             if(joinNameInput) joinNameInput.value = name;
             return;
         }
 
-        // Default: Fallback to existing Kachuful/Kali Tiri flow
         if (typeof NetworkEngine !== 'undefined') NetworkEngine.joinAsSpectator();
     },    
-
-// ------------------------------
 
     shareRoomLink() {
         if (typeof NetworkEngine === 'undefined') return;
@@ -303,7 +300,7 @@ showRoomPanel() {
 
     switchView(viewId) {
         this.state.currentView = viewId;
-        localStorage.setItem('hub_master_config', JSON.stringify(this.state));
+        this.pingAction(); 
 
         document.querySelectorAll('.modal, [id^="modal-"], #room-manage-panel, #mafia-host-settings-modal, #mafia-slide-modal').forEach(m => {
             if(m) m.classList.add('hidden');
@@ -326,8 +323,17 @@ showRoomPanel() {
         if (slotEl) slotEl.innerHTML = ''; 
         if (finishBtn) finishBtn.style.display = 'none';
 
-        if (viewId === 'hub' && titleEl) { titleEl.innerText = "Game Hub"; slotEl.innerHTML = `<div class="symbol-gh">GH</div>`; } 
-        else if (viewId === 'spectator-wait' && titleEl) { titleEl.innerText = "Lobby"; slotEl.innerHTML = `<div class="symbol-gh"><i class="fa-solid fa-users"></i></div>`; }
+        if (viewId === 'hub' && titleEl) { 
+            titleEl.innerText = "Game Hub"; slotEl.innerHTML = `<div class="symbol-gh">GH</div>`; 
+        } 
+        else if (viewId === 'spectator-wait' && titleEl) { 
+            titleEl.innerText = "Lobby"; 
+            slotEl.innerHTML = `<div class="symbol-gh"><i class="fa-solid fa-users"></i></div>`; 
+            // INJECTED ESCAPE HATCH: Safety button if host is frozen or disconnected
+            if (!document.getElementById('spec-escape')) {
+                activeSection.insertAdjacentHTML('afterbegin', `<button id="spec-escape" class="spectator-escape-btn" onclick="NetworkEngine.clearSession(); HubEngine.switchView('hub');">Leave Room</button>`);
+            }
+        }
         else if (viewId === 'lobby' && titleEl) { titleEl.innerText = "Lobby"; slotEl.innerHTML = `<div class="symbol-gh"><i class="fa-solid fa-users"></i></div>`; }
         else if (viewId === 'kachuful' && titleEl) { 
             titleEl.innerText = "Kachuful"; 
@@ -413,6 +419,34 @@ showRoomPanel() {
 
         document.getElementById('modal-share').classList.remove('hidden');
         document.getElementById('btn-finish-game').style.display = 'none';
+
+        // INJECT END SESSION BUTTON
+        if (!isRemoteTrigger && typeof NetworkEngine !== 'undefined' && NetworkEngine.role === 'host') {
+            const actionsDiv = document.getElementById('endgame-actions');
+            let destroyBtn = document.getElementById('btn-destroy-room');
+            if (!destroyBtn && actionsDiv) {
+                destroyBtn = document.createElement('button');
+                destroyBtn.id = 'btn-destroy-room';
+                destroyBtn.className = 'icon-btn host-only';
+                destroyBtn.style.color = 'var(--red)';
+                destroyBtn.innerHTML = '<i class="fa-solid fa-power-off"></i><span>End</span>';
+                
+                destroyBtn.onclick = () => {
+                    if (typeof KFEngine !== 'undefined' && this.state.currentView === 'kachuful' && typeof KFEngine.requestSlideAction === 'function') {
+                        KFEngine.requestSlideAction({type: 'DESTROY_SERVER'});
+                    } else if (typeof MafiaEngine !== 'undefined' && this.state.currentView === 'mafia' && typeof MafiaEngine.requestAdminAction === 'function') {
+                        MafiaEngine.requestAdminAction('DESTROY_SERVER');
+                    } else {
+                        if(confirm("Erase active game and end session?")) {
+                            NetworkEngine.broadcastGameOver();
+                            HubEngine.exitToHome();
+                        }
+                    }
+                };
+                actionsDiv.appendChild(destroyBtn); // Places it right next to Home
+            }
+            if (destroyBtn) destroyBtn.style.display = 'flex';
+        }
     },
 
     restartGame(keepPlayers) {
@@ -421,7 +455,6 @@ showRoomPanel() {
             if (this.state.currentView === 'kachuful') KFEngine.startNewGame(KFEngine.state.names);
             if (this.state.currentView === 'kalitiri') KTEngine.startNewGame(KTEngine.state.players);
         } else {
-            // FIX: Purge game engines explicitly so Edit starts completely fresh
             if (this.state.currentView === 'kachuful' && typeof KFEngine !== 'undefined') {
                 KFEngine.state = { players: [], names: [], max: 5, round: 1, bids: [], misses: [], phase: 'bid', history: [], suspendedState: null, editingOldRecordData: null };
                 KFEngine.sync();
@@ -452,11 +485,10 @@ showRoomPanel() {
         });
     },
 
-startQRScanner() {
+    startQRScanner() {
         document.getElementById('qr-reader').style.display = 'block';
         this.html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
         this.html5QrcodeScanner.render((decodedText) => {
-            // Smart Extraction: Pull code whether it's raw text or a full URL
             let code = decodedText;
             if (decodedText.includes('?room=')) {
                 try { code = new URL(decodedText).searchParams.get('room'); } catch(e) {}
@@ -465,7 +497,6 @@ startQRScanner() {
             this.html5QrcodeScanner.clear();
             document.getElementById('qr-reader').style.display = 'none';
             
-            // Require name before auto-joining
             const nameInput = document.getElementById('join-player-name');
             if (!nameInput.value.trim()) {
                 alert("Room detected! Please enter your name to join.");
@@ -476,7 +507,6 @@ startQRScanner() {
         }, (error) => {});
     },
 
-// --- NEW: Safe Network Shutdown ---
     exitToHome() {
         if (typeof NetworkEngine !== 'undefined') NetworkEngine.clearSession();
         if (typeof MafiaEngine !== 'undefined' && MafiaEngine.mqttClient) {
