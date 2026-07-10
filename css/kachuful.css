@@ -58,11 +58,11 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    /* FIX: Solid 70% width to lock the spectator bid text to the right mark */
     width: 70%; 
-    max-width: 300px;
-    flex-shrink: 0;
+    max-width: calc(100% - 120px); /* 🛡️ GUARANTEES room for the + and - buttons */
+    flex-shrink: 1; /* 🛡️ Allows the container to safely squeeze on narrow phones */
 }
+
 
 #view-kachuful .kf-name {
     font-weight: 800; 
