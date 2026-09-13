@@ -127,9 +127,11 @@ const KFEngine = {
             totalBidsContainer.classList.remove('danger-zone');
         }
 
-        if (this.state.phase === 'bid') {
+       if (this.state.phase === 'bid') {
             btnAction.className = "action-icon-btn btn-lock";
             btnAction.innerHTML = '<i class="fa-solid fa-lock"></i>';
+            if (btnUnlock) btnUnlock.classList.add('hidden'); // Hide unlock during bid phase
+            
             if (restricted >= 0 && restricted <= cards) { 
                 warn.innerText = `⚠️ ${this.state.players[lastIdx].name} CANNOT bid ${restricted}`; 
                 warn.classList.remove('hidden');
@@ -141,21 +143,10 @@ const KFEngine = {
         } else {
             btnAction.className = "action-icon-btn btn-record";
             btnAction.innerHTML = '<i class="fa-solid fa-check"></i>';
+            if (btnUnlock && typeof NetworkEngine !== 'undefined' && NetworkEngine.role === 'host') btnUnlock.classList.remove('hidden'); // Show unlock during score phase
             warn.classList.add('hidden');
             if (typeof NetworkEngine !== 'undefined' && NetworkEngine.role === 'host') btnAction.disabled = false;
         }
-
-
-// Add the unlock method:
-    unlockBid() {
-        if(this.state.phase !== 'score') return;
-        this.state.phase = 'bid';
-        
-        // Reset misses since we are unlocking the bid phase
-        this.state.misses.fill(false);
-        this.renderBoard();
-        this.sync();
-    },
 
         let minScore = 0; let maxScore = 0;
         if (this.state.players.length > 0) {
@@ -276,6 +267,17 @@ const KFEngine = {
         this.renderHistory();
     },
 
+    // 🔴 THIS MUST BE ITS OWN INDEPENDENT METHOD OUTSIDE OF renderBoard()
+    unlockBid() {
+        if(this.state.phase !== 'score') return;
+        this.state.phase = 'bid';
+        
+        // Reset misses since we are unlocking the bid phase
+        this.state.misses.fill(false);
+        this.renderBoard();
+        this.sync();
+    },
+    
     renderHistory() {
         document.getElementById('kf-history-head').innerHTML = `<tr><th>R</th>${this.state.names.map(n=>`<th>${n.substring(0,3)}</th>`).join('')}<th>Act</th></tr>`;
         document.getElementById('kf-history-body').innerHTML = [...this.state.history].reverse().map((g, revIdx) => {
